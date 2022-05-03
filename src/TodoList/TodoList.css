@@ -1,0 +1,13 @@
+
+.TodoList{
+    width: 100%;
+    text-align: center;
+    margin: 0;
+    display: grid;
+    align-content: center;
+}
+
+.TodoList ul{
+    list-style: none;
+    padding: 0;
+}

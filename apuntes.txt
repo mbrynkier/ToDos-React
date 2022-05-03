@@ -1,0 +1,176 @@
+Crear componentes vainilla
+
+function App(){
+  return (
+    React.createElement('h1', {id: 'title'}, 'Oli React')
+  );
+}
+
+Otra forma de crear componente
+function App(){
+  return (
+    <h1 id="title">
+      Oli React
+    </h1>
+  );
+}
+
+Se pueden pasar variables con llaves {variables}
+
+No vamos a usar Class, sino className
+
+Los componentes son invisibles por html y empiezan con letra mayuscula
+
+podemos pasar propiedades por los componentes de la siguiente forma <App saludo = "Oli"/>
+y luego usarlo en donde lo importamos como props.saludo
+
+si usamos de la siguiente forma:
+<App> 
+    Bueeeeenas
+</App>
+En donde lo importamos lo podemos usar como children {props.children}
+
+Solo se puede pasar una etiqueta a React por comoponente, pero vamos a usar una etiqueta invisible que se llama <React.Fragment>......</React.Fragment>
+
+exportamos de esta manera para forzarlo a usar el nombre de la function que creamos: 
+export {TodoCounter};
+importamos:
+import {TodoCounter} from './TodoCounter'
+
+Usamos JSX para que con una sintaxis parecida a HTML podamos escribir de manera más entendible el código.
+Los componentes pueden tener propiedades haciendo más interactivo el componente. Por ejemplo usando props.saludo.
+Usando las propiedades podemos reutilizar un mismo componente muchas veces ahorrándonos trabajo.
+Todas las propiedades las podemos mandar de dos formas, como lo vimos en la clase
+<App saludo=“Buenas” /> o usando “children” <App>Buenaaaaaas</App>(donde podemos poner también etiquetas de HTML) y usandolo con props.children
+
+Se puede agregar eventos en los js:
+Como por ejemplo onChange, onClick y hay que pasarle una funcion. Si le pasamos una funcion con parametros hay que envolverlo en otra funcion
+ejemplo:
+function CreateTodoButton(props){
+    const onClick = (msg) =>{
+        alert(msg)
+    };
+
+    return(
+        <section>
+            <button className='CreateTodoButton' 
+            onClick={() => onClick('Aca abrir modal!')}>
+                Agregar
+            </button>
+        </section>
+    );
+}
+
+Para agregar estados:
+const [searchValue, setSearchValue] = React.useState('');
+Estos se pueden pasar como parametros.
+ejemplo:
+const [searchValue, setSearchValue] = React.useState('');
+<TodoSearch 
+  searchValue = {searchValue}
+  setSearchValue = {setSearchValue}
+/>
+y lo recibe de la siguiente manera:
+function TodoSearch({searchValue, setSearchValue})
+
+
+Stateful y Statless components
+-Los componentes stateful son los componentes que guardan y manejan estados. 
+Por lo que hemos aprendido hasta ahora sería los que usan alguna variable que usa React.useState
+-Mientras los componentes stateless son los componentes que solo presentan información. 
+Es decir son los componentes que reciben props o simplemente muestran algun contenido
+
+LocalStorage:
+Solo se puede guardar texto para guardar arrays se usa Json.
+Es para evitar que cuando uno recarga la pagina se borren los datos esto da persistencia.
+const localStorageTodos = localStorage.getItem('TODOS_V1'); //forma que lo recupera
+localStorage.setItem('TODOS_V1', JSON.stringify([])) //Forma que lo setea, en este caso es un string vacio
+
+Custom Hook:
+Son functiones que se utilizan normalmente.
+Empiezan con el nombre de use.
+Se uso para guardar en localStorage en /App/index.js
+
+
+Manejo de Efectos (eventos externos):
+Es para manejar que no haga render todo el tiempo
+Puede ser mientras esta cargando la informacion, que puede ver un error, y que todo se cargo correctamente.
+se usa de manera: React.useEffect
+Se ejecuta justo antes de renderizar
+React.useLayoutEffect es cuando ya renderizo
+Si ponemos lo siguiente [] solamente se renderiza una vez:
+ React.useEffect(() => {
+    console.log('use effecto')
+  }, []);
+
+Pero si ponemos un estado entre los [] solamente renderiza cuando hay un cambio.
+
+Estado Compartido - React Context:
+Se crea un archivo en donde tendra toda nuestra logica. Esto es para evitar de enviar por parametros sino que solamente importando este context tenes disponible
+las propiedades necesarias.
+Es necesario:
+const TodoContext = React.createContext();
+
+function TodoProvider(props){
+  ...codigo....
+   return(
+        <TodoContext.Provider value={{
+            (datos que queremos enviar)
+            error, 
+            loading, 
+            searchedTodos, 
+            completeTodo, 
+            deleteTodo
+        }}>
+            {props.children} (por si queremos agregar algun otro)
+        </TodoContext.Provider>
+    );
+}
+
+y para consumirlo ponemos(dentro de TodoContext.Consumer es una funcion):
+import { TodoContext } from '../TodoContext';
+<TodoContext.Consumer>
+    {({
+        (datos dentro de value)
+        error, 
+        loading, 
+        searchedTodos, 
+        completeTodo, 
+        deleteTodo
+    }) => (
+        <TodoList>
+            {{error && <p>Hubo un Error...</p>}
+            {loading && <p>Estamos Cargando...</p>}
+            {(!loading && !searchedTodos.length) && <p>Crea tu Primer ToDo!</p>}
+
+            {searchedTodos.map(todo =>(
+                <TodoItem 
+                    key={todo.text} 
+                    text={todo.text} 
+                    completed={todo.completed}
+                    onComplete={() => completeTodo(todo.text)}
+                    onDelete = {() => deleteTodo(todo.text)}
+                />
+            ))} }       
+        </TodoList>
+    )}
+</TodoContext.Consumer>
+
+
+Para ahorrarnos de usar TodoContext.Consumer podemos hacer usando use context guardarnos los valores de value dentro TodoContext
+const {
+        error, 
+        loading, 
+        searchedTodos, 
+        completeTodo, 
+        deleteTodo
+    } = React.useContext(TodoContext)
+
+React Portals:
+Es para pasar componentes
+Agrego en index.html 
+<div id="modal"></div>
+Se creo una carpeta y archivo de modal. Lo agregamos al AppUI
+En todoContext se creo un estado para el modal: const [openModal, setOpenModal] = React.useState(false) //Este context es para usar con el modal
+y lo usamos en CreateTodoButton
+props.setOpenModal(prevState => !prevState);
