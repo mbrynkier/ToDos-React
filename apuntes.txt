@@ -174,3 +174,12 @@ Se creo una carpeta y archivo de modal. Lo agregamos al AppUI
 En todoContext se creo un estado para el modal: const [openModal, setOpenModal] = React.useState(false) //Este context es para usar con el modal
 y lo usamos en CreateTodoButton
 props.setOpenModal(prevState => !prevState);
+
+
+comando para publicar en github pages:
+instalamos:
+npm i gh-pages -D
+
+dento de package Json:
+"predeploy": "npm run build",
+"deploy": "gh-pages -d build"
